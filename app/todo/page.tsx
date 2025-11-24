@@ -24,7 +24,7 @@ export default async function TodoPage() {
 
   return (
     <div style={{ maxWidth: '500px', margin: '50px auto', fontFamily: 'sans-serif' }}>
-      <h1>Todo List (SQLite + Prisma)</h1>
+      <h1>To-do List</h1>
       
       <form action={addTodo} style={{ marginBottom: '20px' }}>
         <input 
