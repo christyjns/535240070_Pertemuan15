@@ -6,7 +6,7 @@ async function addTodo(formData: FormData) {
   const title = formData.get('title') as string;
   if (title) {
     await prisma.todo.create({ data: { title } });
-    revalidatePath('/todo'); 
+    revalidatePath('/todo');
   }
 }
 
@@ -20,34 +20,104 @@ async function deleteTodo(formData: FormData) {
 }
 
 export default async function TodoPage() {
-  const todos = await prisma.todo.findMany();
+  const todos = await prisma.todo.findMany({
+    orderBy: { createdAt: 'desc' } 
+  });
 
   return (
-    <div style={{ maxWidth: '500px', margin: '50px auto', fontFamily: 'sans-serif' }}>
-      <h1>To-do List</h1>
-      
-      <form action={addTodo} style={{ marginBottom: '20px' }}>
-        <input 
-          name="title" 
-          type="text" 
-          placeholder="Apa tugasmu?" 
-          style={{ padding: '8px', width: '70%' }} 
-          required 
-        />
-        <button type="submit" style={{ padding: '8px', marginLeft: '5px' }}>Tambah</button>
-      </form>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#f0f2f5',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+      padding: '20px'
+    }}>
+      <div style={{
+        backgroundColor: '#ffffff',
+        width: '100%',
+        maxWidth: '480px',
+        borderRadius: '16px',
+        boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
+        padding: '30px',
+      }}>
+        <h1 style={{ 
+          textAlign: 'center', 
+          color: '#333', 
+          fontSize: '24px', 
+          marginBottom: '25px',
+          fontWeight: '700'
+        }}>
+          ✨ My Task List
+        </h1>
+        
+        <form action={addTodo} style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
+          <input 
+            name="title" 
+            type="text" 
+            placeholder="Mau ngerjain apa hari ini?" 
+            required 
+            style={{ 
+              flex: 1,
+              padding: '12px 15px',
+              borderRadius: '8px',
+              border: '1px solid #ddd',
+              fontSize: '16px',
+              outline: 'none',
+              transition: 'border 0.2s'
+            }} 
+          />
+          <button type="submit" style={{ 
+            padding: '12px 20px',
+            backgroundColor: '#0070f3',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '16px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'background 0.2s'
+          }}>
+            Tambah
+          </button>
+        </form>
 
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {todos.map((todo) => (
-          <li key={todo.id} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #ccc', padding: '10px 0' }}>
-            <span>{todo.title}</span>
-            <form action={deleteTodo}>
-              <input type="hidden" name="id" value={todo.id} />
-              <button type="submit" style={{ background: 'red', color: 'white', border: 'none', padding: '5px' }}>Hapus</button>
-            </form>
-          </li>
-        ))}
-      </ul>
+        {todos.length === 0 ? (
+          <p style={{ textAlign: 'center', color: '#888', fontStyle: 'italic' }}>
+            Belum ada tugas. Yuk produktif! 🚀
+          </p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            {todos.map((todo) => (
+              <li key={todo.id} style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                padding: '15px 0',
+                borderBottom: '1px solid #eee'
+              }}>
+                <span style={{ fontSize: '16px', color: '#444' }}>{todo.title}</span>
+                <form action={deleteTodo}>
+                  <input type="hidden" name="id" value={todo.id} />
+                  <button type="submit" style={{ 
+                    backgroundColor: '#ffe5e5', 
+                    color: '#d32f2f', 
+                    border: 'none', 
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}>
+                    Hapus
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
